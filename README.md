@@ -10,7 +10,7 @@ This is a **Turborepo** monorepo containing:
 - **`apps/api`** - Express.js REST API with TypeScript
   - JWT authentication
   - Multi-tenant data isolation
-  - PostgreSQL with Prisma ORM
+  - PostgreSQL with TypeORM
   - Role-based access control (ADMIN, EDITOR, VIEWER)
   
 - **`apps/web`** - Next.js 14 frontend with TypeScript
@@ -29,7 +29,7 @@ This is a **Turborepo** monorepo containing:
 - **Frontend**: Next.js 14, React 18
 - **Backend**: Express.js, Node.js
 - **Database**: PostgreSQL 16
-- **ORM**: Prisma
+- **ORM**: TypeORM
 - **Caching**: Redis
 - **Build System**: Turborepo
 - **Package Manager**: pnpm
@@ -84,22 +84,17 @@ This is a **Turborepo** monorepo containing:
    pnpm --filter @no-blogg/utils build
    ```
 
-6. **Generate Prisma client**
-   ```bash
-   pnpm --filter @no-blogg/api db:generate
-   ```
-
-7. **Run database migrations**
+6. **Run database migrations**
    ```bash
    pnpm db:migrate
    ```
 
-8. **Seed the database**
+7. **Seed the database**
    ```bash
    pnpm db:seed
    ```
 
-9. **Start development servers**
+8. **Start development servers**
    ```bash
    pnpm dev
    ```
@@ -193,17 +188,14 @@ pnpm lint         # Lint all apps and packages
 pnpm clean        # Clean all build artifacts
 pnpm db:migrate   # Run database migrations
 pnpm db:seed      # Seed the database
-pnpm db:studio    # Open Prisma Studio
 ```
 
 ### API-specific
 ```bash
 pnpm --filter @no-blogg/api dev              # Start API in dev mode
 pnpm --filter @no-blogg/api build            # Build API
-pnpm --filter @no-blogg/api db:generate      # Generate Prisma client
 pnpm --filter @no-blogg/api db:migrate       # Run migrations
 pnpm --filter @no-blogg/api db:seed          # Seed database
-pnpm --filter @no-blogg/api db:studio        # Open Prisma Studio
 ```
 
 ### Web-specific
@@ -344,7 +336,7 @@ pnpm --filter @no-blogg/web start
 ✅ **Authentication** - Secure JWT-based auth  
 ✅ **Authorization** - Role-based access control  
 ✅ **Type Safety** - End-to-end TypeScript  
-✅ **Modern Stack** - Latest versions of Next.js, Prisma, etc.  
+✅ **Modern Stack** - Latest versions of Next.js, TypeORM, etc.  
 ✅ **Monorepo** - Efficient code sharing with Turborepo  
 ✅ **Database Migrations** - Version-controlled schema changes  
 ✅ **Seed Data** - Quick setup with demo data  
@@ -367,7 +359,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with [Next.js](https://nextjs.org/)
 - API powered by [Express](https://expressjs.com/)
-- Database ORM by [Prisma](https://www.prisma.io/)
+- Database ORM by [TypeORM](https://www.prisma.io/)
 - Monorepo by [Turborepo](https://turbo.build/)
 
 ## 📧 Support

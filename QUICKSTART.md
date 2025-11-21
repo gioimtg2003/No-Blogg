@@ -55,9 +55,6 @@ pnpm --filter @no-blogg/utils build
 ### 6. Set Up Database
 
 ```bash
-# Generate Prisma client
-pnpm --filter @no-blogg/api db:generate
-
 # Run migrations
 pnpm db:migrate
 
@@ -147,7 +144,6 @@ pnpm lint                 # Lint all packages
 # Database
 pnpm db:migrate           # Run migrations
 pnpm db:seed              # Seed database
-pnpm db:studio            # Open Prisma Studio
 
 # Individual Services
 pnpm --filter @no-blogg/api dev      # Start API only
