@@ -1,0 +1,28 @@
+{
+  "name": "no-blogg",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-tenant CMS monorepo starter",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean",
+    "db:migrate": "pnpm --filter @no-blogg/api db:migrate",
+    "db:seed": "pnpm --filter @no-blogg/api db:seed",
+    "db:studio": "pnpm --filter @no-blogg/api db:studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.0",
+    "prettier": "^3.1.0",
+    "eslint": "^8.55.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}
