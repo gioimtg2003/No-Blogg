@@ -1,9 +1,8 @@
-import { Router, Response } from 'express';
+import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import prisma from '../db';
-import { AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -57,11 +56,9 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, tenantId: user.tenantId, role: user.role },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    );
+    const tokenPayload = { userId: user.id, email: user.email, tenantId: user.tenantId, role: user.role };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
 
     res.json({
       success: true,
@@ -123,11 +120,9 @@ router.post('/register', async (req, res) => {
     });
 
     // Generate token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, tenantId: user.tenantId, role: user.role },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    );
+    const tokenPayload = { userId: user.id, email: user.email, tenantId: user.tenantId, role: user.role };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
 
     res.status(201).json({
       success: true,

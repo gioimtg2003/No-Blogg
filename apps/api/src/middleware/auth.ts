@@ -41,7 +41,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     req.user = user;
     req.tenantId = user.tenantId;
     next();
-  } catch (error) {
+  } catch {
     return res.status(401).json({ success: false, error: 'Invalid token' });
   }
 };

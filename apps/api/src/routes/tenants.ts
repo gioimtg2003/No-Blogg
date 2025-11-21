@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
     });
 
     res.json({ success: true, data: tenants });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to fetch tenants' });
   }
 });
@@ -44,7 +44,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
     }
 
     res.json({ success: true, data: tenant });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to fetch tenant' });
   }
 });

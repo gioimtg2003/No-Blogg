@@ -33,7 +33,7 @@ router.get('/', async (req: AuthRequest, res) => {
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
-    const where = {
+    const where: Record<string, unknown> = {
       tenantId: req.tenantId!,
       ...(status && { status: status as string }),
     };
@@ -63,7 +63,7 @@ router.get('/', async (req: AuthRequest, res) => {
         totalPages: Math.ceil(total / limitNum),
       },
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to fetch posts' });
   }
 });
@@ -88,7 +88,7 @@ router.get('/:id', async (req: AuthRequest, res) => {
     }
 
     res.json({ success: true, data: post });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to fetch post' });
   }
 });
@@ -168,7 +168,7 @@ router.put('/:id', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, re
       }
     }
 
-    const updateData: any = { ...data };
+    const updateData: Record<string, unknown> = { ...data };
     
     // Set publishedAt when changing status to PUBLISHED
     if (data.status === 'PUBLISHED' && existingPost.status !== 'PUBLISHED') {
@@ -214,7 +214,7 @@ router.delete('/:id', requireRole(['ADMIN']), async (req: AuthRequest, res) => {
     });
 
     res.json({ success: true, message: 'Post deleted successfully' });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to delete post' });
   }
 });
