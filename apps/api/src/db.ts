@@ -1,5 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { AppDataSource } from './data-source';
 
-const prisma = new PrismaClient();
+export const getRepository = () => {
+  if (!AppDataSource.isInitialized) {
+    throw new Error('Database not initialized. Call initializeDatabase() first.');
+  }
+  return AppDataSource;
+};
 
-export default prisma;
+export default AppDataSource;

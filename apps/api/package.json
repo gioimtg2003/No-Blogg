@@ -8,16 +8,19 @@
     "start": "node dist/index.js",
     "clean": "rm -rf dist",
     "lint": "eslint src",
-    "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio",
-    "db:generate": "prisma generate"
+    "typeorm": "typeorm-ts-node-commonjs",
+    "db:migrate": "npm run typeorm migration:run -- -d src/data-source.ts",
+    "db:migrate:generate": "npm run typeorm migration:generate -- -d src/data-source.ts",
+    "db:migrate:create": "npm run typeorm migration:create",
+    "db:migrate:revert": "npm run typeorm migration:revert -- -d src/data-source.ts",
+    "db:seed": "tsx src/database/seed.ts"
   },
   "dependencies": {
     "@no-blogg/types": "workspace:*",
     "@no-blogg/utils": "workspace:*",
-    "@prisma/client": "^5.7.0",
+    "typeorm": "^0.3.19",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.2.1",
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -31,8 +34,9 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.10.0",
-    "prisma": "^5.7.0",
+    "@types/pg": "^8.10.9",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
   }
 }

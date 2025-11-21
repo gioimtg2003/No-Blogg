@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import prisma from '../db';
+import AppDataSource from '../db';
+import { User } from '../entities/User';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -33,16 +34,22 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
       role: string;
     };
 
-    const user = await prisma.user.findUnique({
+    const userRepo = AppDataSource.getRepository(User);
+    const user = await userRepo.findOne({
       where: { id: decoded.userId },
-      select: { id: true, email: true, tenantId: true, role: true },
+      select: ['id', 'email', 'tenantId', 'role'],
     });
 
     if (!user) {
       return res.status(401).json({ success: false, error: 'Invalid token' });
     }
 
-    req.user = user;
+    req.user = {
+      id: user.id,
+      email: user.email,
+      tenantId: user.tenantId,
+      role: user.role,
+    };
     req.tenantId = user.tenantId;
     next();
   } catch {

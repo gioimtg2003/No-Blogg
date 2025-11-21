@@ -2,7 +2,9 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import prisma from '../db';
+import AppDataSource from '../db';
+import { Tenant } from '../entities/Tenant';
+import { User, UserRole } from '../entities/User';
 
 const router = Router();
 
@@ -26,22 +28,23 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password, tenantSlug } = loginSchema.parse(req.body);
 
+    const tenantRepo = AppDataSource.getRepository(Tenant);
+    const userRepo = AppDataSource.getRepository(User);
+
     // Find tenant
     const tenant = tenantSlug
-      ? await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
-      : await prisma.tenant.findFirst();
+      ? await tenantRepo.findOne({ where: { slug: tenantSlug } })
+      : await tenantRepo.findOne({ order: { createdAt: 'ASC' } });
 
     if (!tenant) {
       return res.status(404).json({ success: false, error: 'Tenant not found' });
     }
 
     // Find user
-    const user = await prisma.user.findUnique({
+    const user = await userRepo.findOne({
       where: {
-        email_tenantId: {
-          email,
-          tenantId: tenant.id,
-        },
+        email,
+        tenantId: tenant.id,
       },
     });
 
@@ -85,19 +88,20 @@ router.post('/register', async (req, res) => {
   try {
     const { email, password, name, tenantSlug } = registerSchema.parse(req.body);
 
+    const tenantRepo = AppDataSource.getRepository(Tenant);
+    const userRepo = AppDataSource.getRepository(User);
+
     // Find tenant
-    const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } });
+    const tenant = await tenantRepo.findOne({ where: { slug: tenantSlug } });
     if (!tenant) {
       return res.status(404).json({ success: false, error: 'Tenant not found' });
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await userRepo.findOne({
       where: {
-        email_tenantId: {
-          email,
-          tenantId: tenant.id,
-        },
+        email,
+        tenantId: tenant.id,
       },
     });
 
@@ -109,15 +113,14 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        tenantId: tenant.id,
-        role: 'VIEWER',
-      },
+    const user = userRepo.create({
+      email,
+      password: hashedPassword,
+      name,
+      tenantId: tenant.id,
+      role: UserRole.VIEWER,
     });
+    await userRepo.save(user);
 
     // Generate token
     const tokenPayload = { userId: user.id, email: user.email, tenantId: user.tenantId, role: user.role };

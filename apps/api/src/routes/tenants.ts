@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import prisma from '../db';
+import AppDataSource from '../db';
+import { Tenant } from '../entities/Tenant';
 import { authenticate, AuthRequest } from '../middleware/auth';
 
 const router = Router();
@@ -7,15 +8,11 @@ const router = Router();
 // Public route to get all tenants
 router.get('/', async (req, res) => {
   try {
-    const tenants = await prisma.tenant.findMany({
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        domain: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: 'desc' },
+    const tenantRepo = AppDataSource.getRepository(Tenant);
+
+    const tenants = await tenantRepo.find({
+      select: ['id', 'name', 'slug', 'domain', 'createdAt'],
+      order: { createdAt: 'DESC' },
     });
 
     res.json({ success: true, data: tenants });
@@ -27,16 +24,11 @@ router.get('/', async (req, res) => {
 // Get current tenant (requires authentication)
 router.get('/me', authenticate, async (req: AuthRequest, res) => {
   try {
-    const tenant = await prisma.tenant.findUnique({
+    const tenantRepo = AppDataSource.getRepository(Tenant);
+
+    const tenant = await tenantRepo.findOne({
       where: { id: req.tenantId! },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        domain: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: ['id', 'name', 'slug', 'domain', 'createdAt', 'updatedAt'],
     });
 
     if (!tenant) {

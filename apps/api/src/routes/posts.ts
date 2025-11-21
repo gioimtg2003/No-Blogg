@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import prisma from '../db';
+import AppDataSource from '../db';
+import { Post, PostStatus } from '../entities/Post';
 import { authenticate, requireRole, tenantIsolation, AuthRequest } from '../middleware/auth';
 
 const router = Router();
@@ -33,24 +34,40 @@ router.get('/', async (req: AuthRequest, res) => {
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
+    const postRepo = AppDataSource.getRepository(Post);
+
     const where: Record<string, unknown> = {
       tenantId: req.tenantId!,
-      ...(status && { status: status as string }),
+      ...(status && { status: status as PostStatus }),
     };
 
     const [posts, total] = await Promise.all([
-      prisma.post.findMany({
+      postRepo.find({
         where,
-        include: {
-          author: {
-            select: { id: true, name: true, email: true },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
+        relations: ['author'],
+        order: { createdAt: 'DESC' },
         skip,
         take: limitNum,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          content: true,
+          excerpt: true,
+          status: true,
+          publishedAt: true,
+          createdAt: true,
+          updatedAt: true,
+          authorId: true,
+          tenantId: true,
+          author: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       }),
-      prisma.post.count({ where }),
+      postRepo.count({ where }),
     ]);
 
     res.json({
@@ -71,14 +88,30 @@ router.get('/', async (req: AuthRequest, res) => {
 // Get a single post
 router.get('/:id', async (req: AuthRequest, res) => {
   try {
-    const post = await prisma.post.findFirst({
+    const postRepo = AppDataSource.getRepository(Post);
+
+    const post = await postRepo.findOne({
       where: {
         id: req.params.id,
         tenantId: req.tenantId!,
       },
-      include: {
+      relations: ['author'],
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        content: true,
+        excerpt: true,
+        status: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        authorId: true,
+        tenantId: true,
         author: {
-          select: { id: true, name: true, email: true },
+          id: true,
+          name: true,
+          email: true,
         },
       },
     });
@@ -97,14 +130,13 @@ router.get('/:id', async (req: AuthRequest, res) => {
 router.post('/', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, res) => {
   try {
     const data = createPostSchema.parse(req.body);
+    const postRepo = AppDataSource.getRepository(Post);
 
     // Check if slug already exists for this tenant
-    const existingPost = await prisma.post.findUnique({
+    const existingPost = await postRepo.findOne({
       where: {
-        slug_tenantId: {
-          slug: data.slug,
-          tenantId: req.tenantId!,
-        },
+        slug: data.slug,
+        tenantId: req.tenantId!,
       },
     });
 
@@ -112,21 +144,41 @@ router.post('/', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, res)
       return res.status(409).json({ success: false, error: 'Slug already exists' });
     }
 
-    const post = await prisma.post.create({
-      data: {
-        ...data,
-        authorId: req.user!.id,
-        tenantId: req.tenantId!,
-        publishedAt: data.status === 'PUBLISHED' ? new Date() : null,
-      },
-      include: {
+    const post = postRepo.create({
+      ...data,
+      status: data.status as PostStatus || PostStatus.DRAFT,
+      authorId: req.user!.id,
+      tenantId: req.tenantId!,
+      publishedAt: data.status === 'PUBLISHED' ? new Date() : undefined,
+    });
+
+    await postRepo.save(post);
+
+    // Fetch with relations
+    const savedPost = await postRepo.findOne({
+      where: { id: post.id },
+      relations: ['author'],
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        content: true,
+        excerpt: true,
+        status: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        authorId: true,
+        tenantId: true,
         author: {
-          select: { id: true, name: true, email: true },
+          id: true,
+          name: true,
+          email: true,
         },
       },
     });
 
-    res.status(201).json({ success: true, data: post });
+    res.status(201).json({ success: true, data: savedPost });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ success: false, error: error.errors });
@@ -139,9 +191,10 @@ router.post('/', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, res)
 router.put('/:id', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, res) => {
   try {
     const data = updatePostSchema.parse(req.body);
+    const postRepo = AppDataSource.getRepository(Post);
 
     // Check if post exists and belongs to tenant
-    const existingPost = await prisma.post.findFirst({
+    const existingPost = await postRepo.findOne({
       where: {
         id: req.params.id,
         tenantId: req.tenantId!,
@@ -154,12 +207,10 @@ router.put('/:id', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, re
 
     // If updating slug, check for conflicts
     if (data.slug && data.slug !== existingPost.slug) {
-      const conflictPost = await prisma.post.findUnique({
+      const conflictPost = await postRepo.findOne({
         where: {
-          slug_tenantId: {
-            slug: data.slug,
-            tenantId: req.tenantId!,
-          },
+          slug: data.slug,
+          tenantId: req.tenantId!,
         },
       });
 
@@ -169,18 +220,34 @@ router.put('/:id', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, re
     }
 
     const updateData: Record<string, unknown> = { ...data };
-    
+
     // Set publishedAt when changing status to PUBLISHED
-    if (data.status === 'PUBLISHED' && existingPost.status !== 'PUBLISHED') {
+    if (data.status === 'PUBLISHED' && existingPost.status !== PostStatus.PUBLISHED) {
       updateData.publishedAt = new Date();
     }
 
-    const post = await prisma.post.update({
+    await postRepo.update(req.params.id, updateData);
+
+    // Fetch updated post with relations
+    const post = await postRepo.findOne({
       where: { id: req.params.id },
-      data: updateData,
-      include: {
+      relations: ['author'],
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        content: true,
+        excerpt: true,
+        status: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        authorId: true,
+        tenantId: true,
         author: {
-          select: { id: true, name: true, email: true },
+          id: true,
+          name: true,
+          email: true,
         },
       },
     });
@@ -197,8 +264,10 @@ router.put('/:id', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, re
 // Delete a post (requires ADMIN role)
 router.delete('/:id', requireRole(['ADMIN']), async (req: AuthRequest, res) => {
   try {
+    const postRepo = AppDataSource.getRepository(Post);
+
     // Check if post exists and belongs to tenant
-    const existingPost = await prisma.post.findFirst({
+    const existingPost = await postRepo.findOne({
       where: {
         id: req.params.id,
         tenantId: req.tenantId!,
@@ -209,9 +278,7 @@ router.delete('/:id', requireRole(['ADMIN']), async (req: AuthRequest, res) => {
       return res.status(404).json({ success: false, error: 'Post not found' });
     }
 
-    await prisma.post.delete({
-      where: { id: req.params.id },
-    });
+    await postRepo.remove(existingPost);
 
     res.json({ success: true, message: 'Post deleted successfully' });
   } catch {
