@@ -69,7 +69,7 @@ export class Post {
   @BeforeInsert()
   generateId() {
     if (!this.id) {
-      this.id = `c${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      this.id = `c${Date.now()}${Math.random().toString(36).substring(2, 11)}`;
     }
   }
 }

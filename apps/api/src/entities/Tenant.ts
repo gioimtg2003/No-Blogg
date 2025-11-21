@@ -40,7 +40,7 @@ export class Tenant {
   generateId() {
     if (!this.id) {
       // Generate a simple unique ID (in production, use a proper ID generation library)
-      this.id = `c${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      this.id = `c${Date.now()}${Math.random().toString(36).substring(2, 11)}`;
     }
   }
 }

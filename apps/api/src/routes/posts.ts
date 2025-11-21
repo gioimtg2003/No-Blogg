@@ -146,10 +146,10 @@ router.post('/', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, res)
 
     const post = postRepo.create({
       ...data,
-      status: data.status as PostStatus || PostStatus.DRAFT,
+      status: data.status ? (data.status as PostStatus) : PostStatus.DRAFT,
       authorId: req.user!.id,
       tenantId: req.tenantId!,
-      publishedAt: data.status === 'PUBLISHED' ? new Date() : undefined,
+      publishedAt: data.status === PostStatus.PUBLISHED ? new Date() : undefined,
     });
 
     await postRepo.save(post);
@@ -222,7 +222,7 @@ router.put('/:id', requireRole(['ADMIN', 'EDITOR']), async (req: AuthRequest, re
     const updateData: Record<string, unknown> = { ...data };
 
     // Set publishedAt when changing status to PUBLISHED
-    if (data.status === 'PUBLISHED' && existingPost.status !== PostStatus.PUBLISHED) {
+    if (data.status === PostStatus.PUBLISHED && existingPost.status !== PostStatus.PUBLISHED) {
       updateData.publishedAt = new Date();
     }
 

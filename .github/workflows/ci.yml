@@ -98,12 +98,12 @@ jobs:
       
       - name: Run migrations
         env:
-          DATABASE_URL: ******localhost:5432/noblogg_test?schema=public
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/noblogg_test?schema=public
         run: pnpm --filter @no-blogg/api db:migrate
       
       - name: Run tests
         env:
-          DATABASE_URL: ******localhost:5432/noblogg_test?schema=public
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/noblogg_test?schema=public
           JWT_SECRET: test-secret-key
         run: pnpm test || echo "No tests defined yet"
 

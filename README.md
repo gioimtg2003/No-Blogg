@@ -359,7 +359,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with [Next.js](https://nextjs.org/)
 - API powered by [Express](https://expressjs.com/)
-- Database ORM by [TypeORM](https://www.prisma.io/)
+- Database ORM by [TypeORM](https://typeorm.io/)
 - Monorepo by [Turborepo](https://turbo.build/)
 
 ## 📧 Support
