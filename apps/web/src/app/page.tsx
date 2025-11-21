@@ -79,7 +79,7 @@ export default function Home() {
             <a href="/login">
               <button className="button">Get Started</button>
             </a>
-            <a href="https://github.com/gioimtg2003/No-Blogg" target="_blank">
+            <a href="https://github.com/gioimtg2003/No-Blogg" target="_blank" rel="noopener noreferrer">
               <button className="button button-secondary">View on GitHub</button>
             </a>
           </div>

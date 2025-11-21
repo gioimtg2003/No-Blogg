@@ -38,11 +38,16 @@ export default function DashboardPage() {
       return;
     }
 
-    setAuthToken(token);
-    setUser(JSON.parse(userStr));
-
-    // Fetch posts
-    loadPosts();
+    try {
+      setAuthToken(token);
+      setUser(JSON.parse(userStr));
+      loadPosts();
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
   }, []);
 
   const loadPosts = async () => {

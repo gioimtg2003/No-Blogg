@@ -114,6 +114,10 @@ This is a **Turborepo** monorepo containing:
    ```bash
    git clone https://github.com/gioimtg2003/No-Blogg.git
    cd No-Blogg
+   
+   # Copy and configure Docker environment variables
+   cp .env.example .env
+   # Edit .env and set a strong JWT_SECRET
    ```
 
 2. **Start all services**
