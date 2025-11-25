@@ -10,8 +10,18 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "build:web": "turbo run build --filter=@no-blogg/web",
+    "build:api": "turbo run build --filter=@no-blogg/api",
+    "build:packages": "turbo run build --filter=./packages/*",
+    "build:libs": "turbo run build --filter=./libs/*",
     "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@no-blogg/web",
+    "dev:api": "turbo run dev --filter=@no-blogg/api",
+    "start:web": "pnpm --filter @no-blogg/web start",
+    "start:api": "pnpm --filter @no-blogg/api start:prod",
     "lint": "turbo run lint",
+    "lint:web": "turbo run lint --filter=@no-blogg/web",
+    "lint:api": "turbo run lint --filter=@no-blogg/api",
     "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

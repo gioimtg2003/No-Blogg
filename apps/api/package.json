@@ -20,7 +20,7 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.4.16",
+    "@nestjs/cli": "^10.4.9",
     "@no-blogg/eslint-config": "workspace:*",
     "@no-blogg/tsconfig": "workspace:*",
     "@types/express": "^5.0.1",
