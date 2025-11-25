@@ -150,6 +150,7 @@ pnpm lint:web         # Lint Next.js web app
 pnpm lint:api         # Lint NestJS API
 pnpm clean            # Clean all build artifacts
 pnpm format           # Format code with Prettier
+pnpm create:plugin    # Create a new plugin (CLI tool)
 ```
 
 ### Package-specific
@@ -162,6 +163,79 @@ pnpm --filter @no-blogg/logger build         # Build logger package
 pnpm --filter @no-blogg/core build           # Build core library
 pnpm --filter @no-blogg/plugin-newsletter build  # Build newsletter plugin
 ```
+
+## 🔨 Plugin Generator CLI
+
+Create new plugins quickly using the built-in CLI tool:
+
+```bash
+# Using npm script
+pnpm create:plugin <plugin-name>
+
+# Or directly
+node scripts/create-plugin.js <plugin-name>
+
+# Examples
+pnpm create:plugin billing
+pnpm create:plugin user-profile
+pnpm create:plugin analytics-dashboard
+```
+
+### Generated Structure
+
+```
+libs/plugins/<plugin-name>/
+├── package.json
+├── tsconfig.json
+├── tsup.config.ts
+├── .eslintrc.js
+└── src/
+    ├── index.ts
+    ├── constants.ts
+    ├── client/
+    │   ├── index.ts
+    │   └── components/
+    │       ├── <plugin-name>-list.tsx
+    │       └── <plugin-name>-form.tsx
+    ├── server/
+    │   ├── index.ts
+    │   ├── <plugin-name>.module.ts
+    │   ├── <plugin-name>.controller.ts
+    │   └── <plugin-name>.service.ts
+    └── shared/
+        ├── index.ts
+        ├── types.ts
+        └── dto.ts
+```
+
+### Validation Rules
+
+The CLI validates plugin names with the following rules:
+- Must start with a letter
+- Can only contain lowercase letters, numbers, and hyphens
+- Must be at least 2 characters long
+- Must be less than 50 characters
+- Cannot use reserved names (core, shared, common, utils, lib, plugin)
+- Cannot duplicate existing plugin names
+
+### After Creating a Plugin
+
+1. Run `pnpm install` to install dependencies
+2. Import the module in `apps/api/src/app.module.ts`:
+   ```typescript
+   import { YourPluginModule } from "@no-blogg/plugin-your-plugin/server";
+   
+   @Module({
+     imports: [YourPluginModule.forRoot()],
+     // ...
+   })
+   export class AppModule {}
+   ```
+3. Use components in `apps/web`:
+   ```typescript
+   import { YourPluginList, YourPluginForm } from "@no-blogg/plugin-your-plugin/client";
+   ```
+4. Run `pnpm build` to build the plugin
 
 ## 🔌 Plugin Architecture
 

@@ -23,7 +23,8 @@
     "lint:web": "turbo run lint --filter=@no-blogg/web",
     "lint:api": "turbo run lint --filter=@no-blogg/api",
     "clean": "turbo run clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "create:plugin": "node scripts/create-plugin.js"
   },
   "devDependencies": {
     "prettier": "^3.5.3",
