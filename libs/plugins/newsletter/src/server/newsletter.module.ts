@@ -1,13 +1,16 @@
-// NestJS Module for Newsletter feature
-// This is a placeholder that would be extended with actual NestJS decorators
-// when @nestjs/common is available
+import { Module, DynamicModule } from "@nestjs/common";
+import { NewsletterService } from "./newsletter.service";
+import { SubscriberService } from "./subscriber.service";
+import { NewsletterController } from "./newsletter.controller";
 
+@Module({})
 export class NewsletterModule {
-  static forRoot() {
+  static forRoot(): DynamicModule {
     return {
       module: NewsletterModule,
-      providers: [],
-      exports: [],
+      controllers: [NewsletterController],
+      providers: [NewsletterService, SubscriberService],
+      exports: [NewsletterService, SubscriberService],
     };
   }
 }

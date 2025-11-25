@@ -32,6 +32,9 @@ importers:
       '@no-blogg/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@no-blogg/plugin-newsletter':
+        specifier: workspace:*
+        version: link:../../libs/plugins/newsletter
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -137,6 +140,9 @@ importers:
         specifier: ^18.0.0
         version: 18.3.1
     devDependencies:
+      '@nestjs/common':
+        specifier: ^10.4.17
+        version: 10.4.20(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@no-blogg/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config

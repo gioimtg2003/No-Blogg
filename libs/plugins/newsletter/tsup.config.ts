@@ -12,5 +12,5 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ["react"],
+  external: ["react", "@nestjs/common", "@nestjs/core"],
 });

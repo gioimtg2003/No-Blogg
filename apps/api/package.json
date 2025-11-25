@@ -16,6 +16,7 @@
     "@nestjs/core": "^10.4.17",
     "@nestjs/platform-express": "^10.4.17",
     "@no-blogg/logger": "workspace:*",
+    "@no-blogg/plugin-newsletter": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
