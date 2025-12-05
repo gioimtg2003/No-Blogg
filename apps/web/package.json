@@ -4,15 +4,10 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "next build --no-turbopack",
+        "build": "next build",
         "start": "next start",
         "lint": "eslint",
         "check-types": "tsc --noEmit"
-    },
-    "dependencies": {
-        "next": "16.0.6",
-        "react": "19.2.0",
-        "react-dom": "19.2.0"
     },
     "devDependencies": {
         "@noblogg/typescript-config": "workspace:^",
