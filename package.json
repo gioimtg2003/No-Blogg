@@ -1,5 +1,5 @@
 {
-    "name": "NoBlogg",
+    "name": "noblogg",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -10,7 +10,6 @@
         "build": "turbo run build",
         "build:web": "turbo run build --filter=@noblogg/web...",
         "build:server": "turbo run build --filter=@noblogg/server...",
-        "build:page": "npx @cloudflare/next-on-pages",
         "test": "turbo run test",
         "test:e2e": "turbo run test:e2e",
         "lint": "turbo run lint"
