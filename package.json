@@ -4,6 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "dev:web": "turbo run dev --filter=@noblogg/web...",
+        "dev:server": "turbo run dev --filter=@noblogg/server...",
         "dev": "turbo run dev",
         "build": "turbo run build",
         "test": "turbo run test",

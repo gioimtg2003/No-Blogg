@@ -1,0 +1,7 @@
+{
+  "extends": "@noblogg/typescript-config/nest.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+  }
+}
